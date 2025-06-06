@@ -41,8 +41,7 @@ local_zone = datetime.now().astimezone().tzinfo
 instructions = (
     "Today is "
     + datetime.now().strftime("%Y-%m-%d")
-    + " and you are a helpful assistant that can help me find a studio for rehearsal. Show me times in my timezone: "
-    + str(local_zone) + ", unless I ask for a different timezone."
+    + " and you are a helpful assistant that can help me find a studio for rehearsal. Show me times in New York time, unless I ask for a different timezone."
 )
 agent = Agent(
     model=OpenAIChat(id=model, api_key=api_key, base_url=api_base),
