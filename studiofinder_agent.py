@@ -7,7 +7,7 @@ from agno.tools.reasoning import ReasoningTools
 from studiofinder_tools import StudioFinderTools
 
 
-def run_studiofinder_agent(query: str):
+def run_studiofinder_agent(agent: Agent, query: str):
     api_key = os.getenv("OPENAI_API_KEY")
     api_base = os.getenv("OPENAI_API_BASE")
     model = os.getenv("LLM_MODEL")
@@ -23,6 +23,9 @@ def run_studiofinder_agent(query: str):
         tools=[StudioFinderTools(), ReasoningTools()],
         markdown=True,
         instructions=instructions,
+        add_history_to_messages=True,
+        num_history_runs=3,
+        read_chat_history=True,
     )
     response_stream: Iterator[RunResponse] = agent.run(query, stream=True)
     return response_stream

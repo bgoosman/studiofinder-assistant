@@ -1,7 +1,14 @@
+import os
 from datetime import datetime
+from typing import Iterator
+
 import streamlit as st
-from studiofinder_agent import run_studiofinder_agent
+from agno.agent import Agent, RunResponse
+from agno.models.openai import OpenAIChat
+from agno.tools.reasoning import ReasoningTools
 from dotenv import load_dotenv
+
+from studiofinder_tools import StudioFinderTools
 
 load_dotenv()
 
@@ -26,6 +33,32 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
+api_key = os.getenv("OPENAI_API_KEY")
+api_base = os.getenv("OPENAI_API_BASE")
+model = os.getenv("LLM_MODEL")
+local_zone = datetime.now().astimezone().tzinfo
+instructions = (
+    "Today is "
+    + datetime.now().strftime("%Y-%m-%d")
+    + " and you are a helpful assistant that can help me find a studio for rehearsal. Show me times in my timezone: "
+    + str(local_zone) + ", unless I ask for a different timezone."
+)
+agent = Agent(
+    model=OpenAIChat(id=model, api_key=api_key, base_url=api_base),
+    tools=[StudioFinderTools(), ReasoningTools()],
+    markdown=True,
+    instructions=instructions,
+    add_history_to_messages=True,
+    num_history_runs=5,
+    read_chat_history=True,
+)
+
+
+def run_studiofinder_agent(query: str):
+    response_stream: Iterator[RunResponse] = agent.run(query, stream=True)
+    return response_stream
+
 # Chat input
 if prompt := st.chat_input("What kind of studio are you looking for?"):
     # Add user message to chat history
@@ -41,7 +74,7 @@ if prompt := st.chat_input("What kind of studio are you looking for?"):
         full_response = ""
         
         # Stream the response
-        for response in run_studiofinder_agent(prompt):
+        for response in agent.run(messages=st.session_state.messages, stream=True):
             if response.content:
                 full_response += response.content
             message_placeholder.markdown(full_response + "▌")
