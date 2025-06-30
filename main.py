@@ -20,7 +20,7 @@ st.set_page_config(
 
 st.title("StudioFinder Assistant")
 st.markdown("""
-This assistant helps you find dance studios in New York City.
+This assistant helps you find dance studios in New York City. Try writing "help me find availability tomorrow" to get started.
 """)
 
 # Initialize chat history
