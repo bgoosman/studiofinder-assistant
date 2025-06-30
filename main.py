@@ -18,10 +18,9 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🎙️ StudioFinder Assistant")
+st.title("StudioFinder Assistant")
 st.markdown("""
-This assistant helps you find and evaluate recording studios based on your needs.
-Simply describe what you're looking for, and the assistant will help you find the perfect studio!
+This assistant helps you find dance studios in New York City.
 """)
 
 # Initialize chat history
